@@ -34,6 +34,8 @@ GM.ExpPerTeamKill = -400
 
 GM.SendCurrencyAmount = {cash = nil, exp = nil}
 
+GM.NO_TEAM_DAMAGE = false -- if set to true, all team damage will be disabled
+
 CreateConVar("gc_proximity_voicechat", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, nearby enemies will be able to hear other enemies speak
 CreateConVar("gc_proximity_voicechat_distance", 256, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- distance in source units within which players will hear other players
 CreateConVar("gc_proximity_voicechat_global", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, everybody, including your team mates and your enemies, will only hear each other within the distance specified by gc_proximity_voicechat_distance
@@ -254,6 +256,10 @@ function GM:disableCustomizationMenu()
 end
 
 function GM:PlayerCanHearPlayersVoice(listener, talker)
+	if listener == talker then -- if the talker is the listener they can always hear themselves, so don't run any extra logic in such cases
+		return true
+	end
+	
 	if self.RoundOver or GetConVarNumber("sv_alltalk") > 0 then
 		return true
 	end
@@ -261,14 +267,25 @@ function GM:PlayerCanHearPlayersVoice(listener, talker)
 	if listener:Alive() and not talker:Alive() then
 		return false
 	end
-	
+		
 	local differentTeam = talker:Team() ~= listener:Team()
+	local canUseDirectional = false
 	
 	if self.proximityVoiceChat then
 		local tooFar = listener:GetPos():Distance(talker:GetPos()) > self.proximityVoiceChatDistance
 		
-		if (differentTeam and tooFar) or (self.proximityVoiceChatGlobal and tooFar) then
-			return false
+		if self.proximityVoiceChatGlobal then -- if global proximity chat is on, we check whether we're close enough to anyone, and if we are too far - disable voice
+			if tooFar then
+				return false
+			end
+		else -- if it isn't on, we check for whether the talker is an enemy, and if he is, but he's too far - we can't hear them
+			if differentTeam and tooFar then
+				return false
+			end
+			
+			if self.proximityVoiceChatDirectional3D then
+				canUseDirectional = differentTeam -- directional sound should not be active if teammate players can hear each other across the whole map
+			end
 		end
 	else
 		if differentTeam then
@@ -276,7 +293,7 @@ function GM:PlayerCanHearPlayersVoice(listener, talker)
 		end
 	end
 	
-	return true, self.proximityVoiceChatDirectional3D
+	return true, canUseDirectional
 end
 
 function GM:PlayerCanSeePlayersChat(text, teamOnly, listener, talker)
@@ -331,8 +348,12 @@ local Vec0 = Vector(0, 0, 0)
 function GM:ScalePlayerDamage(ply, hitGroup, dmgInfo)
 	local attacker = dmgInfo:GetAttacker()
 	local damage = dmgInfo:GetDamage()
-	
 	local differentTeam = attacker:Team() ~= ply:Team()
+	
+	if not differentTeam and self.NO_TEAM_DAMAGE and attacker ~= ply then -- disable all team damage if the server is configged that way
+		dmgInfo:ScaleDamage(0)
+		return
+	end
 	
 	ply:setStamina(ply.stamina - damage)
 	ply:suppress(4, 0.25)
