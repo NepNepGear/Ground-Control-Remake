@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "ground_control/hud/armor/aa_dyneema_vest"
+	"$translucent" 1
+	"$vertexalpha" 1
+	"$vertexcolor" 1
+}

@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "ground_control/hud/status/crippled_arm"
+	"$nolod" 1
+	"$translucent" 1
+	"$vertexalpha" 1
+	"$vertexcolor" 1
+}

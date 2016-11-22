@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	"$basetexture" "models/player/stalker/backbk"
+	 "$bumpmap" "models/player/stalker/backbk_normal"
+}

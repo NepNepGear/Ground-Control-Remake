@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "ground_control/hud/point_of_interest"
+	"$nolod" 1
+	"$translucent" 1
+	"$vertexalpha" 1
+	"$vertexcolor" 1
+}

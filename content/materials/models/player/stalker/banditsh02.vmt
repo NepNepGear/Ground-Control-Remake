@@ -1,0 +1,12 @@
+VertexLitGeneric
+{
+	"$basetexture" "models/player/stalker/banditsh02.vtf"
+	"$bumpmap" "models/player/stalker/banditsh02_normal.vtf"
+	"$model" "1"
+	"$halflambert" "1"
+	"$phong" "1"
+	"$phongboost" "1"
+	"$phongexponent" 30
+	"$phongalbedotint" "1"								
+	"$phongfresnelranges"	"[0.05 0.1 1]"
+}
