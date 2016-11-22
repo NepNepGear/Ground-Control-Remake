@@ -1097,76 +1097,91 @@ function attachmentSelection:Paint()
 	end
 	
 	if self:IsHovered() then
-		if not self.descBox then
-			local x, y = self:LocalToScreen(0, 0)
-			self.descBox = vgui.Create("GCGenericDescbox")
-			self.descBox:InsertText(self.attachmentData.displayName, "CW_HUD28", 0)
-			self.descBox:SetDrawOnTop(true)
-			
-			if self:IsLocked() then
-				self.descBox:InsertText("Click to purchase for " .. self.attachmentData.price .. "$", "CW_HUD20", 10)
-			else
-				if not self:IsAttachmentUsed(self.attachmentName) then
-					local can, result, data = self:CanAttachSpecificAttachmnent()
-					
-					if not can then
-						if result == -4 or result == -6 then -- missing attachment
-							local baseText = "Can't attach, requires: "
-							
-							if data then
-								if result == -4 then
-									for key, attName in ipairs(data) do
-										baseText = baseText .. CustomizableWeaponry.registeredAttachmentsSKey[attName].displayNameShort
-										
-										if key ~= #data then
-											baseText = baseText .. "/"
-										end
-									end
-								else
-									local total = table.Count(data)
-									local cur = 0
-									
-									for attName, etc in pairs(data) do
-										cur = cur + 1
-										baseText = baseText .. CustomizableWeaponry.registeredAttachmentsSKey[attName].displayNameShort
-										
-										if cur ~= total then
-											baseText = baseText .. "/"
-										end
-									end
-								end
-							end
-							
-							self.descBox:InsertText(baseText, "CW_HUD20", 10)
-						elseif result == -3 or result == -5 then -- incompatibility with other attachment
-							if result == -5 then
-								self.descBox:InsertText("Can't attach, conflicts with: " .. CustomizableWeaponry.registeredAttachmentsSKey[data].displayNameShort, "CW_HUD20", 10)
-							end
-						end
-					else
-						self.descBox:InsertText("Left-click to assign attachment.", "CW_HUD20", 10)
-					end
-				else
-					self.descBox:InsertText("Right-click to un-assign attachment.", "CW_HUD20", 10)
-				end
-			end
-			
-			self.descBox:SetText(self.attachmentData.description)
-			
-			local width, newHeight = self.descBox:GetSize()
-			
-			if y + newHeight + h > ScrH() then -- if we don't have enough space vertically, we align it to bottom
-				y = ScrH() - newHeight
-			else
-				y = y + h
-			end
-			
-			self.descBox:SetPos(x + w, y)
-			self.descBox:SetZPos(101)
-		end
+		self:createInfoBox()
 	else
 		self:RemoveDescBox()
 	end
+end
+
+function attachmentSelection:createInfoBox()
+	if not IsValid(self.descBox) then
+		local w, h = self:GetSize()
+		local x, y = self:LocalToScreen(0, 0)
+		self.descBox = vgui.Create("GCGenericDescbox")
+		self.descBox:InsertText(self.attachmentData.displayName, "CW_HUD28", 0)
+		self.descBox:SetDrawOnTop(true)
+		
+		if self:IsLocked() then
+			self.descBox:InsertText("Click to purchase for " .. self.attachmentData.price .. "$", "CW_HUD20", 10)
+		else
+			if not self:IsAttachmentUsed(self.attachmentName) then
+				local can, result, data = self:CanAttachSpecificAttachmnent()
+				
+				if not can then
+					if result == -4 or result == -6 then -- missing attachment
+						local baseText = "Can't attach, requires: "
+						
+						if data then
+							if result == -4 then
+								for key, attName in ipairs(data) do
+									baseText = baseText .. CustomizableWeaponry.registeredAttachmentsSKey[attName].displayNameShort
+									
+									if key ~= #data then
+										baseText = baseText .. "/"
+									end
+								end
+							else
+								local total = table.Count(data)
+								local cur = 0
+								
+								for attName, etc in pairs(data) do
+									cur = cur + 1
+									baseText = baseText .. CustomizableWeaponry.registeredAttachmentsSKey[attName].displayNameShort
+									
+									if cur ~= total then
+										baseText = baseText .. "/"
+									end
+								end
+							end
+						end
+						
+						self.descBox:InsertText(baseText, "CW_HUD20", 10)
+					elseif result == -3 or result == -5 then -- incompatibility with other attachment
+						if result == -5 then
+							self.descBox:InsertText("Can't attach, conflicts with: " .. CustomizableWeaponry.registeredAttachmentsSKey[data].displayNameShort, "CW_HUD20", 10)
+						end
+					end
+				else
+					self.descBox:InsertText("Left-click to assign attachment.", "CW_HUD20", 10)
+				end
+			else
+				self.descBox:InsertText("Right-click to un-assign attachment.", "CW_HUD20", 10)
+			end
+		end
+		
+		self.descBox:SetText(self.attachmentData.description)
+		
+		local width, newHeight = self.descBox:GetSize()
+		
+		if y + newHeight + h > ScrH() then -- if we don't have enough space vertically, we align it to bottom
+			y = ScrH() - newHeight
+		else
+			y = y + h
+		end
+		
+		self.descBox:SetPos(x + w, y)
+		self.descBox:SetZPos(101)
+		
+		GAMEMODE.activeAttachmentSelectionHover = self
+	end
+end
+
+function attachmentSelection:recreateInfoBox()
+	if IsValid(self.descBox) then
+		self.descBox:Remove()
+	end
+	
+	self:createInfoBox()
 end
 
 function attachmentSelection:OnMousePressed(bind)

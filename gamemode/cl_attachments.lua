@@ -7,6 +7,10 @@ function PLAYER:unlockAttachment(attachmentName)
 	end
 	
 	self.ownedAttachments[attachmentName] = true
+	
+	if IsValid(GAMEMODE.activeAttachmentSelectionHover) then
+		GAMEMODE.activeAttachmentSelectionHover:recreateInfoBox()
+	end
 end
 
 function PLAYER:resetAttachmentData()
