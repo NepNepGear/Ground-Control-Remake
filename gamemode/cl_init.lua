@@ -60,6 +60,7 @@ GM.RadioMenuKey = "gm_showspare1"
 
 function GM:InitPostEntity()
 	local ply = LocalPlayer()
+	ply.cash = ply.cash or 0
 	ply:spawn()
 	ply:resetGadgetData()
 	ply:resetAttachmentData()

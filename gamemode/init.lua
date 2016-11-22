@@ -107,7 +107,6 @@ function GM:InitPostEntity()
 	
 	self:verifyAutoDownloadMap()
 	
-	self:updateServerName()
 	self:performOnChangedCvarCallbacks()
 end
 

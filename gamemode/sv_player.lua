@@ -34,6 +34,31 @@ GM.ExpPerTeamKill = -400
 
 GM.SendCurrencyAmount = {cash = nil, exp = nil}
 
+CreateConVar("gc_proximity_voicechat", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, nearby enemies will be able to hear other enemies speak
+CreateConVar("gc_proximity_voicechat_distance", 256, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- distance in source units within which players will hear other players
+CreateConVar("gc_proximity_voicechat_global", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, everybody, including your team mates and your enemies, will only hear each other within the distance specified by gc_proximity_voicechat_distance
+CreateConVar("gc_proximity_voicechat_directional", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, voice chat will be directional 3d sound (as described in the gmod wiki)
+
+GM:registerAutoUpdateConVar("gc_proximity_voicechat", function(cvarName, oldValue, newValue)
+	newValue = tonumber(newValue)
+	GAMEMODE.proximityVoiceChat = newValue >= 1
+end)
+
+GM:registerAutoUpdateConVar("gc_proximity_voicechat_distance", function(cvarName, oldValue, newValue)
+	newValue = tonumber(newValue)
+	GAMEMODE.proximityVoiceChatDistance = newValue
+end)
+
+GM:registerAutoUpdateConVar("gc_proximity_voicechat_global", function(cvarName, oldValue, newValue)
+	newValue = tonumber(newValue)
+	GAMEMODE.proximityVoiceChatGlobal = newValue >= 1
+end)
+
+GM:registerAutoUpdateConVar("gc_proximity_voicechat_directional", function(cvarName, oldValue, newValue)
+	newValue = tonumber(newValue)
+	GAMEMODE.proximityVoiceChatDirectional3D = newValue >= 1
+end)
+
 local PLAYER = FindMetaTable("Player")
 
 function GM:PlayerInitialSpawn(ply)
@@ -237,11 +262,21 @@ function GM:PlayerCanHearPlayersVoice(listener, talker)
 		return false
 	end
 	
-	if talker:Team() ~= listener:Team() then
-		return false
+	local differentTeam = talker:Team() ~= listener:Team()
+	
+	if self.proximityVoiceChat then
+		local tooFar = listener:GetPos():Distance(talker:GetPos()) > self.proximityVoiceChatDistance
+		
+		if (differentTeam and tooFar) or (self.proximityVoiceChatGlobal and tooFar) then
+			return false
+		end
+	else
+		if differentTeam then
+			return false
+		end
 	end
 	
-	return true
+	return true, self.proximityVoiceChatDirectional3D
 end
 
 function GM:PlayerCanSeePlayersChat(text, teamOnly, listener, talker)
