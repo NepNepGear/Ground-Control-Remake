@@ -40,6 +40,7 @@ CreateConVar("gc_proximity_voicechat", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if s
 CreateConVar("gc_proximity_voicechat_distance", 256, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- distance in source units within which players will hear other players
 CreateConVar("gc_proximity_voicechat_global", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, everybody, including your team mates and your enemies, will only hear each other within the distance specified by gc_proximity_voicechat_distance
 CreateConVar("gc_proximity_voicechat_directional", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, voice chat will be directional 3d sound (as described in the gmod wiki)
+CreateConVar("gc_invincibility_time_period", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- how long should the player be invincible for after spawning (for anti spawn killing in gametypes like urban warfare)
 
 GM:registerAutoUpdateConVar("gc_proximity_voicechat", function(cvarName, oldValue, newValue)
 	newValue = tonumber(newValue)
@@ -61,6 +62,11 @@ GM:registerAutoUpdateConVar("gc_proximity_voicechat_directional", function(cvarN
 	GAMEMODE.proximityVoiceChatDirectional3D = newValue >= 1
 end)
 
+GM:registerAutoUpdateConVar("gc_invincibility_time_period", function(cvarName, oldValue, newValue)
+	newValue = tonumber(newValue)
+	GAMEMODE.postSpawnInvincibilityTimePeriod = newValue
+end)
+
 local PLAYER = FindMetaTable("Player")
 
 function GM:PlayerInitialSpawn(ply)
@@ -76,6 +82,7 @@ function GM:PlayerInitialSpawn(ply)
 	ply:loadUnlockedAttachmentSlots()
 	ply:loadTraits()
 	ply.lastDataRequest = 0
+	ply.invincibilityPeriod = 0
 	ply:SetNWInt("GC_SCORE", 0)
 	ply:SetDTFloat(0, 1) -- movement speed multiplier
 	ply:SetDTFloat(1, 0) -- delay for movement speed multiplier reset
@@ -133,6 +140,7 @@ function GM:PlayerSpawn(ply)
 	ply.canPickupWeapon = true
 	ply.crippledArm = false
 	ply.sustainedArmDamage = 0 -- regardless of which arm was hit
+	ply:setInvincibilityPeriod(self.postSpawnInvincibilityTimePeriod)
 	table.clear(ply.attackedBy)
 	ply:SetHullDuck(self.DuckHullMin, self.DuckHullMax)
 	ply:SetViewOffsetDucked(self.ViewOffsetDucked)
@@ -349,6 +357,13 @@ function GM:ScalePlayerDamage(ply, hitGroup, dmgInfo)
 	local attacker = dmgInfo:GetAttacker()
 	local damage = dmgInfo:GetDamage()
 	local differentTeam = attacker:Team() ~= ply:Team()
+	
+	if attacker ~= ply and attacker:IsPlayer() then
+		if CurTime() < self.invincibilityPeriod then -- player is still invincible after spawning, remove any damage done and don't do anything
+			dmgInfo:ScaleDamage(0)
+			return
+		end
+	end
 	
 	if not differentTeam and self.NO_TEAM_DAMAGE and attacker ~= ply then -- disable all team damage if the server is configged that way
 		dmgInfo:ScaleDamage(0)
@@ -624,6 +639,10 @@ function PLAYER:sendStatusEffect(id, state)
 			end
 		end
 	end
+end
+
+function PLAYER:setInvincibilityPeriod(time) -- used for anti-spawncamp systems
+	self.invincibilityPeriod = CurTime() + time
 end
 
 concommand.Add("gc_request_data", function(ply, com, args)
