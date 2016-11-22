@@ -487,7 +487,7 @@ function PLAYER:checkForTeammateSave(victim)
 				end
 			end
 		else
-			if self:Health() <= GAMEMODE.MinHealthForCloseCall then
+			if self:Health() <= GAMEMODE.MinHealthForCloseCall and self:Alive() then
 				self:addCurrency(GAMEMODE.CashPerCloseCall, GAMEMODE.ExpPerCloseCall, "CLOSE_CALL")
 			end
 		end
