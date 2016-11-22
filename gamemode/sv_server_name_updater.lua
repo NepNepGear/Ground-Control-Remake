@@ -29,7 +29,7 @@ function GM:updateServerName()
 	end
 end
 
-cvars.AddChangeCallback("gc_auto_adjust_server_name", function(cvarName, oldValue, newValue)	
+GM:registerAutoUpdateConVar("gc_auto_adjust_server_name", function(cvarName, oldValue, newValue)	
 	if tonumber(newValue) and tonumber(newValue) > 0 then
 		GAMEMODE:updateServerName()
 	end

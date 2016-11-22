@@ -4,6 +4,23 @@
 	thank you for understanding!
 ]]--
 
+GM.AutoUpdateConVars = {}
+
+function GM:registerAutoUpdateConVar(cvarName, onChangedCallback)
+	self.AutoUpdateConVars[cvarName] = onChangedCallback
+	
+	cvars.AddChangeCallback(cvarName, onChangedCallback)
+end
+
+function GM:performOnChangedCvarCallbacks()
+	for cvarName, callback in pairs(self.AutoUpdateConVars) do
+		local curValue = GetConVar(cvarName)
+		local finalValue = curValue:GetInt() or curValue:GetFloat() or curValue:GetString() -- we don't know whether the callback wants a string or a number, so if we can get a valid number from it, we will use that if we can't, we will use a string value
+		
+		callback(cvarName, finalValue, finalValue)
+	end
+end
+
 include("sh_mixins.lua")
 
 include("sv_player_bleeding.lua")
@@ -91,6 +108,7 @@ function GM:InitPostEntity()
 	self:verifyAutoDownloadMap()
 	
 	self:updateServerName()
+	self:performOnChangedCvarCallbacks()
 end
 
 function GM:EntityTakeDamage(target, dmgInfo)
