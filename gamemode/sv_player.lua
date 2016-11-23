@@ -34,13 +34,12 @@ GM.ExpPerTeamKill = -400
 
 GM.SendCurrencyAmount = {cash = nil, exp = nil}
 
-GM.NO_TEAM_DAMAGE = false -- if set to true, all team damage will be disabled
-
 CreateConVar("gc_proximity_voicechat", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, nearby enemies will be able to hear other enemies speak
 CreateConVar("gc_proximity_voicechat_distance", 256, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- distance in source units within which players will hear other players
 CreateConVar("gc_proximity_voicechat_global", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, everybody, including your team mates and your enemies, will only hear each other within the distance specified by gc_proximity_voicechat_distance
 CreateConVar("gc_proximity_voicechat_directional", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, voice chat will be directional 3d sound (as described in the gmod wiki)
 CreateConVar("gc_invincibility_time_period", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- how long should the player be invincible for after spawning (for anti spawn killing in gametypes like urban warfare)
+CreateConVar("gc_team_damage", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- how long should the player be invincible for after spawning (for anti spawn killing in gametypes like urban warfare)
 
 GM:registerAutoUpdateConVar("gc_proximity_voicechat", function(cvarName, oldValue, newValue)
 	newValue = tonumber(newValue)
@@ -65,6 +64,11 @@ end)
 GM:registerAutoUpdateConVar("gc_invincibility_time_period", function(cvarName, oldValue, newValue)
 	newValue = tonumber(newValue)
 	GAMEMODE.postSpawnInvincibilityTimePeriod = newValue or 3
+end)
+
+GM:registerAutoUpdateConVar("gc_team_damage", function(cvarName, oldValue, newValue)
+	newValue = tonumber(newValue)
+	GAMEMODE.noTeamDamage = newValue >= 1
 end)
 
 local PLAYER = FindMetaTable("Player")
@@ -365,7 +369,7 @@ function GM:ScalePlayerDamage(ply, hitGroup, dmgInfo)
 		end
 	end
 	
-	if not differentTeam and self.NO_TEAM_DAMAGE and attacker ~= ply then -- disable all team damage if the server is configged that way
+	if not differentTeam and self.noTeamDamage and attacker ~= ply then -- disable all team damage if the server is configged that way
 		dmgInfo:ScaleDamage(0)
 		return
 	end
