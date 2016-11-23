@@ -68,7 +68,7 @@ end)
 
 GM:registerAutoUpdateConVar("gc_team_damage", function(cvarName, oldValue, newValue)
 	newValue = tonumber(newValue)
-	GAMEMODE.noTeamDamage = newValue >= 1
+	GAMEMODE.noTeamDamage = newValue <= 0
 end)
 
 local PLAYER = FindMetaTable("Player")
