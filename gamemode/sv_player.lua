@@ -359,7 +359,7 @@ function GM:ScalePlayerDamage(ply, hitGroup, dmgInfo)
 	local differentTeam = attacker:Team() ~= ply:Team()
 	
 	if attacker ~= ply and attacker:IsPlayer() then
-		if CurTime() < self.invincibilityPeriod then -- player is still invincible after spawning, remove any damage done and don't do anything
+		if CurTime() < ply.invincibilityPeriod then -- player is still invincible after spawning, remove any damage done and don't do anything
 			dmgInfo:ScaleDamage(0)
 			return
 		end
