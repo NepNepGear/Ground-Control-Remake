@@ -29,8 +29,8 @@ GM.SaveEventTimeWindow = 5
 GM.CashPerOneManArmy = 15
 GM.ExpPerOneManArmy = 10
 
-GM.CashPerTeamKill = -200
-GM.ExpPerTeamKill = -400
+GM.CashPerTeamKill = -100
+GM.ExpPerTeamKill = -200
 
 GM.SendCurrencyAmount = {cash = nil, exp = nil}
 
