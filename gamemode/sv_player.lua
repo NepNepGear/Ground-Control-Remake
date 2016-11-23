@@ -64,7 +64,7 @@ end)
 
 GM:registerAutoUpdateConVar("gc_invincibility_time_period", function(cvarName, oldValue, newValue)
 	newValue = tonumber(newValue)
-	GAMEMODE.postSpawnInvincibilityTimePeriod = newValue
+	GAMEMODE.postSpawnInvincibilityTimePeriod = newValue or 3
 end)
 
 local PLAYER = FindMetaTable("Player")
