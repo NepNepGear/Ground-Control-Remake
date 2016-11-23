@@ -349,7 +349,7 @@ GM.DropPrimaryHitgroup = { -- clear hitbox indexes in this table if you don't wa
 	[HITGROUP_RIGHTARM] = true
 }
 
-GM.DropPrimarySustainedDamage = 40 -- how much arm damage the player has to sustain in order to drop the weapon
+GM.DropPrimarySustainedDamage = 60 -- how much arm damage the player has to sustain in order to drop the weapon
 
 local Vec0 = Vector(0, 0, 0)
 	
