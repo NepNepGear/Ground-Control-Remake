@@ -5,7 +5,7 @@ GM.RadioDelay = 2
 local PLAYER = FindMetaTable("Player")
 
 function PLAYER:resetRadioData()
-	self.radioWait = 0
+	self.radioWait = 1
 end
 
 function GM:SendRadioCommand(ply, category, radioId, command)
