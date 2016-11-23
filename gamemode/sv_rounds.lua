@@ -240,8 +240,10 @@ function GM:setupRoundPreparation()
 	timer.Simple(self.RoundPreparationTime, function()
 		self:disableCustomizationMenu()
 	end)
-	
-	SendUserMessage("GC_ROUND_PREPARATION")
+
+	umsg.Start("GC_ROUND_PREPARATION")
+		umsg.Float(self.PreparationTime)
+	umsg.End()
 end
 
 function GM:countLivingPlayers(teamToCheck)

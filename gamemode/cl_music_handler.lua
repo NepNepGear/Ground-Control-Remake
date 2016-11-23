@@ -1,18 +1,18 @@
--- the gamemode was originally supposed to have a ton of music cues for events like round win, round start, idle music during gameplay
--- but the person who was making the music got busy with life stuff and so the only track there is the one you hear at round start :(
-
 GM.currentMusicObject = nil
 
 GM.RoundStartTracks = GM.RoundStartTracks or {"ground_control/music_cues/round_start_1.mp3"}
 GM.RoundStartMusicObjects = GM.RoundStartMusicObjects or {}
 
-GM.RoundEndTracks = GM.RoundEndTracks or {}
+GM.RoundEndTracks = GM.RoundEndTracks or {"ground_control/music_cues/round_end_win.mp3"}
 GM.RoundEndMusicObjects = GM.RoundEndMusicObjects or {}
 
 GM.LastManStandingTracks = GM.LastManStandingTracks or {}
 GM.LastManStandingMusicObjects = GM.LastManStandingMusicObjects or {}
 
 GM.DefaultMusicFadeTime = 3
+
+GM.RoundStartTrackVolume = 0.5
+GM.RoundEndTrackVolume = 0.4
 
 function GM:createMusicObjects() -- prepares all the music objects necessary for the gamemode
 	for key, pathToSound in ipairs(self.RoundStartTracks) do
@@ -51,12 +51,12 @@ function GM:playMusic(object, shouldFadePrevious, volume)
 	self:replayMusic(object, volume)
 end
 
-function GM:replayMusic(object, volume)
+function GM:replayMusic(object, volume)	
 	object = object or self.currentMusicObject
 	volume = volume or 1
 	
 	object:Stop()
-	object:Play(volume, 100)
+	object:PlayEx(volume, 100)
 end
 
 function GM:fadeMusicOut(object, fadeTime)

@@ -83,9 +83,9 @@ usermessage.Hook("GC_GAME_BEGIN", GC_GameBegin)
 
 
 local function GC_RoundPreparation(data)
-	local winningTeam = data:ReadChar()
+	local preparationTime = data:ReadFloat()
 	
-	GAMEMODE:roundPreparation(winningTeam)
+	GAMEMODE:roundPreparation(preparationTime)
 end
 
 usermessage.Hook("GC_ROUND_PREPARATION", GC_RoundPreparation)

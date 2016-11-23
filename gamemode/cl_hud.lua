@@ -407,6 +407,10 @@ function GM:createRoundOverDisplay(winTeam)
 	
 	if winTeam then
 		popup:SetWinningTeam(winTeam)
+		
+		if winTeam == LocalPlayer():Team() then
+			self:playMusic(self.RoundEndMusicObjects[math.random(1, #self.RoundEndMusicObjects)], nil, self.RoundEndTrackVolume)
+		end
 	else
 		popup:SetTopText("New match start")
 		popup:SetBottomText("Starting a new game in ")
@@ -425,20 +429,20 @@ function GM:createRoundOverDisplay(winTeam)
 	self.lastPopup = popup
 end
 
-function GM:createRoundPreparationDisplay(winTeam)
+function GM:createRoundPreparationDisplay(preparationTime)
 	self:resetVisualAdrenaline()
 	self:resetVisualStamina()
-	
+		
 	local result = vgui.Create("GCRoundPreparation")
-	result:SetPrepareTime(GAMEMODE.RoundPreparationTime)
+	result:SetPrepareTime(preparationTime - CurTime())
 	result:SetSize(310, 50)
 	result:Center()
 	
 	local x, y = result:GetPos()
 	result:SetPos(x, y - 200)
 	
-	self.PreparationTime = CurTime() + self.RoundPreparationTime
-	self:playMusic(self.RoundStartMusicObjects[math.random(1, #self.RoundStartMusicObjects)], nil, 0.7)
+	self.PreparationTime = preparationTime
+	self:playMusic(self.RoundStartMusicObjects[math.random(1, #self.RoundStartMusicObjects)], nil, self.RoundStartTrackVolume)
 	
 	if self.curGametype.roundStart then
 		self.curGametype:roundStart()

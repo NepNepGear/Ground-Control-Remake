@@ -102,10 +102,10 @@ function PLAYER:spawn()
 	end)
 end
 
-function GM:roundPreparation(winningTeam) -- called upon the start of a new round
+function GM:roundPreparation(preparationTime) -- called upon the start of a new round
 	self:resetAllStatusEffects()
 	LocalPlayer():spawn()
-	self:createRoundPreparationDisplay(winningTeam)
+	self:createRoundPreparationDisplay(preparationTime)
 	self:destroyMVPPanel()
 end
 
