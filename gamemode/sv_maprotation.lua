@@ -20,6 +20,15 @@ function GM:filterExistingMaps(list)
 	return newList
 end
 
+function GM:addMapToMapRotationList(mapRotationList, mapName)
+	if not self.MapRotation[mapRotationList] then
+		self.MapRotation[mapRotationList] = {}
+		print("[GROUND CONTROL] - attempt to add a map to a non-existant map rotation list, creating list")
+	end
+	
+	table.insert(self.MapRotation[mapRotationList], mapName)
+end
+
 function GM:hasMap(mapName)
 	return file.Exists("maps/" .. mapName .. ".bsp", "GAME")
 end
