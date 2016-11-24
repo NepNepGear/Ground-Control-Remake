@@ -12,6 +12,20 @@ local function GC_BleedState(data)
 	LocalPlayer():setBleeding(bleed)
 end
 
+local function GC_CrippleState(data)
+	local cripple = data:ReadBool()
+	
+	if cripple then
+		GAMEMODE.tipController:handleEvent("BEGIN_CRIPPLE")
+		GAMEMODE:showStatusEffect("cripple")
+	else
+		GAMEMODE.tipController:handleEvent("STOPPED_CRIPPLE")
+		GAMEMODE:removeStatusEffect("cripple")
+	end
+	
+	LocalPlayer():setCripple(cripple)
+end
+
 usermessage.Hook("GC_BLEEDSTATE", GC_BleedState)
 
 local function GC_Bandages(data)
